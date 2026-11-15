@@ -18,9 +18,103 @@
 
 ## ERD
 
-![ERD](docs/erd.png)
+```mermaid
+erDiagram
+    Grade ||--o{ User : "grade_id"
+    User ||--o{ User_coupon : "user_id"
+    Coupon ||--o{ User_coupon : "coupon_id"
+    User ||--o{ Rating : "user_id"
+    Movie ||--o{ Rating : "movie_id"
+    Theater ||--o{ Auditorium : "theater_id"
+    Auditorium ||--o{ Seat : "auditorium_id"
+    Auditorium ||--o{ Screening : "auditorium_id"
+    Movie ||--o{ Screening : "movie_id"
+    User ||--o{ Booked : "user_id"
+    Seat ||--o{ Booked : "seat_id"
+    Screening ||--o{ Booked : "screening_id"
 
-테이블은 12개입니다.
+    Grade {
+        INT grade_id PK
+        VARCHAR grade
+    }
+    User {
+        INT user_id PK
+        VARCHAR name
+        INT total_spent
+        INT total_stamp
+        INT grade_id FK
+    }
+    Coupon {
+        INT coupon_id PK
+        VARCHAR coupon
+        ENUM benefit_type
+        INT benefit_value
+    }
+    User_coupon {
+        INT user_coupon_id PK
+        INT user_id FK
+        INT coupon_id FK
+        DATETIME expires_at
+        ENUM status
+    }
+    Movie {
+        INT movie_id PK
+        VARCHAR name
+        INT running_time
+        INT age_rating
+        INT total_admissions
+        DATE release_date
+        DATE end_date
+        VARCHAR url
+    }
+    Rating {
+        INT rating_id PK
+        INT movie_id FK
+        INT user_id FK
+        INT score
+        VARCHAR comment
+    }
+    Theater {
+        INT theater_id PK
+        VARCHAR name
+        VARCHAR address
+    }
+    Auditorium {
+        INT auditorium_id PK
+        INT theater_id FK
+        VARCHAR type
+    }
+    Seat {
+        INT seat_id PK
+        INT auditorium_id FK
+        VARCHAR col_s
+        VARCHAR row_s
+        VARCHAR type
+    }
+    Screening {
+        INT screening_id PK
+        INT auditorium_id FK
+        INT movie_id FK
+        DATETIME start_time
+        DATETIME end_time
+    }
+    Booked {
+        INT booked_id PK
+        INT seat_id FK
+        INT user_id FK
+        INT screening_id FK
+        INT price
+    }
+    Promotion {
+        INT promotion_id PK
+        VARCHAR name
+        DATE start_date
+        DATE end_date
+        VARCHAR url
+    }
+```
+
+테이블은 12개, 외래키 관계는 12개입니다. `Promotion`은 다른 테이블과 외래키로 연결되지 않고 기간 조건으로만 조회합니다.
 
 | 영역 | 테이블 | 설명 |
 |---|---|---|
@@ -116,10 +210,8 @@ curl "http://127.0.0.1:5000/api/movieTime?date=2025-11-10&theater_id=1"
 ```
 ├── app.py                # Flask API
 ├── requirements.txt
-├── sql/
-│   ├── 01_schema.sql     # 테이블·제약조건·인덱스
-│   ├── 02_views.sql      # 화면별 뷰
-│   └── 03_seed.sql       # 샘플 데이터
-└── docs/
-    └── erd.png
+└── sql/
+    ├── 01_schema.sql     # 테이블·제약조건·인덱스
+    ├── 02_views.sql      # 화면별 뷰
+    └── 03_seed.sql       # 샘플 데이터
 ```
